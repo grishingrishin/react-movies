@@ -12,8 +12,8 @@ class App extends Component {
       movies: [],
       moviewsWillWatch: [],
       sortBy: 'popularity.desc',
-      currentPage: '',
-      totalPages: ''
+      page: 1,
+      totalPages: 10,
     };
   }
 
@@ -50,24 +50,24 @@ class App extends Component {
     });
   }
 
+  changePageHandler = page => {
+    return this.setState({
+      page
+    });
+  }
+
   getMovies = () => {
-    return fetch(`${API_URL}/discover/movie?api_key=${API_KEY_3}&sort_by=${this.state.sortBy}&page=${this.state.currentPage}`)
+    return fetch(`${API_URL}/discover/movie?api_key=${API_KEY_3}&sort_by=${this.state.sortBy}&page=${this.state.page}`)
       .then(res => {
         return res.json()
       })
       .then(data => {
         return this.setState({
           movies: data.results,
-          currentPage: data.page,
+          page: data.page,
           totalPages: data.total_pages
         })
       });
-  }
-
-  changePageHandler = page => {
-    return this.setState({
-      currentPage: page
-    });
   }
 
   componentDidMount() {
@@ -75,7 +75,7 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.sortBy !== this.state.sortBy || prevState.currentPage !== this.state.currentPage) {
+    if (prevState.sortBy !== this.state.sortBy || prevState.page !== this.state.page) {
       return this.getMovies();
     }
   }
@@ -105,9 +105,10 @@ class App extends Component {
             <div className='row'>
               <div className='col-12'>
                 <Pagination 
-                  currentPage={this.state.currentPage}
+                  page={this.state.page}
+                  perPage={3}
                   totalPages={this.state.totalPages}
-                  changePageHandler={this.changePageHandler} 
+                  onChangePage={this.changePageHandler}
                 />
               </div>
             </div>

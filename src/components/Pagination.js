@@ -1,35 +1,47 @@
 import React from 'react';
 
-const Pagination = ({ currentPage, totalPages, changePageHandler }) => {
+const Pagination = ({ page, totalPages, perPage, onChangePage }) => {
+  let pages = [];
+
+  for (let i = 1; i <= totalPages; i++) pages.push(i);
+
+  const indexOfLastPage = (page + (perPage - 1)) >= totalPages ? totalPages : page + (perPage - 1);
+  const indexOfFirstPage = indexOfLastPage - perPage;
+  const currentPage = pages.slice(indexOfFirstPage, indexOfLastPage);
+
+  const handleMoveLeft = () => onChangePage(page - 1);
+
+  const handleMoveRight = () => onChangePage(page + 1);
+
+  const handleClick = page => e => {
+    return onChangePage(page);
+  }
+
   return (
     <nav aria-label='Page navigation example'>
       <ul className='pagination'>
-        {currentPage === 1 ?
+        {page === 1 ?
         <li className='page-item disabled'>
           <span className='page-link'>Previous</span>
         </li> :
         <li className='page-item'>
-          <span className='page-link' onClick={() => changePageHandler(currentPage - 1)}>Previous</span>
+          <span className='page-link' onClick={handleMoveLeft}>Previous</span>
         </li>}
-        <li className='page-item'>
-          <span className='page-link' onClick={() => changePageHandler()}>1</span>
-        </li>
-        <li className='page-item'>
-          <span className='page-link' onClick={() => changePageHandler()}>2</span>
-        </li>
-        <li className='page-item'>
-          <span className='page-link' onClick={() => changePageHandler()}>3</span>
-        </li>
-        {currentPage === totalPages ?
+        {currentPage.map((page, index) => (
+          <li className='page-item' key={index}>
+            <span className='page-link' onClick={handleClick(page)}>{page}</span>
+          </li>
+        ))}
+        {page === totalPages ?
         <li className='page-item disabled'>
           <span className='page-link'>Next</span>
         </li> :
         <li className='page-item'>
-          <span className='page-link' onClick={() => changePageHandler(currentPage + 1)}>Next</span>
-        </li>} 
+          <span className='page-link' onClick={handleMoveRight}>Next</span>
+        </li>}
       </ul>
     </nav>
-  );
+  )
 }
 
 export default Pagination;
